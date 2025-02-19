@@ -14,3 +14,17 @@
 
 **Spring Batch vs. Simple Thread**
 
+In a simple thread-based approach, you might write a multi-threaded program where each task is handled by a separate thread. However, this approach might not be well-suited for large-scale batch processing for the following reasons:
+
+**Error Handling**: Handling failures or retrying specific chunks of data is cumbersome with threads.
+
+**Transaction Management**: Simple threads do not provide built-in transaction management, so ensuring data consistency becomes more complex.
+
+**Chunk-based processing**: With threads, it is hard to implement chunk-based processing where you process data in manageable chunks.
+
+**Performance**: Handling millions of records with multiple threads could lead to resource contention or thread management problems without careful tuning.]
+
+**Scalability**: Managing the scaling of tasks can be complex in a simple thread-based system.
+
+
+
