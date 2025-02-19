@@ -11,3 +11,6 @@
 **Error handling and recovery**: Includes features to handle failures and restart jobs from a specific point.
 
 **Transaction management**: Ensures data consistency by using transactions to commit data changes.
+
+**Spring Batch vs. Simple Thread**
+
