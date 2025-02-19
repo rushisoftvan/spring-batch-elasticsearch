@@ -26,5 +26,11 @@ In a simple thread-based approach, you might write a multi-threaded program wher
 
 **Scalability**: Managing the scaling of tasks can be complex in a simple thread-based system.
 
+**Job** (in Spring Batch)
+A job in Spring Batch refers to a larger unit of work that typically consists of multiple steps (like reading data, processing it, and writing the result). Jobs are usually more complex and involve a series of tasks that are run in a specific sequence or concurrently. In Spring Batch:
+
+A job consists of one or more steps.
+Each step typically represents a specific task (e.g., reading data from a file, processing it, and saving the result).
+
 
 
