@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-@EnableBatchProcessing
 public class SpringBatchApplication implements CommandLineRunner {
 
 	private final JobLauncher jobLauncher;

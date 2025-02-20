@@ -1,15 +1,22 @@
 package com.learn.spring_batch.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 @Table(name="sales")
+@NoArgsConstructor
+@AllArgsConstructor
 public class SalesEntity {
 
     @Id
@@ -31,6 +38,7 @@ public class SalesEntity {
     @Column(name="order_priority")
     private String orderPriority;
 
+
     @Column(name="order_date")
     private LocalDate orderDate;
 
@@ -38,10 +46,10 @@ public class SalesEntity {
     private String orderId;
 
     @Column(name="shipe_date")
-    private LocalDate ShipDate;
+    private LocalDate shipDate;
 
     @Column(name="unit_solid")
-    private  Long unitsSoled;
+    private  Long unitsSold;
 
     @Column(name="unit_price")
     private Double unitPrice;
