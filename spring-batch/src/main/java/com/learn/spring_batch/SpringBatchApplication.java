@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-public class SpringBatchApplication implements CommandLineRunner {
+public class SpringBatchApplication{
 
 	private final JobLauncher jobLauncher;
 
@@ -21,14 +21,14 @@ public class SpringBatchApplication implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBatchApplication.class, args);
 	}
-
-	@Override
-	public void run(String... args) throws Exception {
-		try {
-			JobExecution jobExecution = jobLauncher.run(job, new JobParameters());
-			System.out.println("Job executed with status: " + jobExecution.getStatus());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//
+//	@Override
+//	public void run(String... args) throws Exception {
+//		try {
+//			JobExecution jobExecution = jobLauncher.run(job, new JobParameters());
+//			System.out.println("Job executed with status: " + jobExecution.getStatus());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 }
