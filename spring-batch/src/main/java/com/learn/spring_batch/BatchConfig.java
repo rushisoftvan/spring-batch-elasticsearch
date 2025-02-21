@@ -1,7 +1,6 @@
 package com.learn.spring_batch;
 
 import com.learn.spring_batch.entities.Sale;
-import com.learn.spring_batch.entities.SalesEntity;
 import com.learn.spring_batch.processer.SalesItemProcessor;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,50 +60,51 @@ public class BatchConfig {
 //        // second solution
 //
 //
-////        FlatFileItemReader<SalesEntity> reader = new FlatFileItemReader<>();
-////        reader.setResource(new ClassPathResource("10000 Sales Records.csv"));
-////
-////        // Define date format for orderDate and shipDate
-////        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-////
-////        // Custom FieldSetMapper to handle LocalDate
-////        reader.setLineMapper(new DefaultLineMapper<SalesEntity>() {{
-////            setLineTokenizer(new DelimitedLineTokenizer() {{
-////                setNames("Region","Country","Item Type",
-////                            "Sales Channel","Order Priority","Order Date","Order ID","Ship Date","Units Sold"
-////                            ,"Unit Price","Unit Cost","Total Revenue","Total Cost","Total Profit");
-////            }});
-////
-////            setFieldSetMapper(new BeanWrapperFieldSetMapper<SalesEntity>() {{
-////                setTargetType(SalesEntity.class);
-////                setFieldSetMapper(new FieldSetMapper<SalesEntity>() {
-////                    @Override
-////                    public SalesEntity mapFieldSet(FieldSet fieldSet) {
-////                        SalesEntity salesData = new SalesEntity();
-////                        salesData.setRegion(fieldSet.readString("Region"));
-////                        salesData.setCountry(fieldSet.readString("Country"));
-////                        salesData.setItemType(fieldSet.readString("Item Type"));
-////                        salesData.setSalesChannel(fieldSet.readString("Sales Channel"));
-////                        salesData.setOrderPriority(fieldSet.readString("Order Priority"));
-////
-////                        // Parse orderDate and shipDate from string to LocalDate
-////                        salesData.setOrderDate(LocalDate.parse(fieldSet.readString("Order Date"), formatter));
-////                        salesData.setShipDate(LocalDate.parse(fieldSet.readString("shipDate"), formatter));
-////
-////                        salesData.setUnitsSold((long) fieldSet.readInt("Units Sold"));
-////                        salesData.setUnitPrice(fieldSet.readDouble("Unit Price"));
-////                        salesData.setUnitCost(fieldSet.readDouble("Unit Cost"));
-////                        salesData.setTotalRevenue(fieldSet.readDouble("Total Revenue"));
-////                        salesData.setTotalCost(fieldSet.readDouble("totalCost"));
-////                        salesData.setTotalProfit(fieldSet.readDouble("totalProfit"));
-////
-////                        return salesData;
-////                    }
-////                });
-////            }});
-////        }});
-////
-////        return reader;
+
+    /// /        FlatFileItemReader<SalesEntity> reader = new FlatFileItemReader<>();
+    /// /        reader.setResource(new ClassPathResource("10000 Sales Records.csv"));
+    /// /
+    /// /        // Define date format for orderDate and shipDate
+    /// /        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    /// /
+    /// /        // Custom FieldSetMapper to handle LocalDate
+    /// /        reader.setLineMapper(new DefaultLineMapper<SalesEntity>() {{
+    /// /            setLineTokenizer(new DelimitedLineTokenizer() {{
+    /// /                setNames("Region","Country","Item Type",
+    /// /                            "Sales Channel","Order Priority","Order Date","Order ID","Ship Date","Units Sold"
+    /// /                            ,"Unit Price","Unit Cost","Total Revenue","Total Cost","Total Profit");
+    /// /            }});
+    /// /
+    /// /            setFieldSetMapper(new BeanWrapperFieldSetMapper<SalesEntity>() {{
+    /// /                setTargetType(SalesEntity.class);
+    /// /                setFieldSetMapper(new FieldSetMapper<SalesEntity>() {
+    /// /                    @Override
+    /// /                    public SalesEntity mapFieldSet(FieldSet fieldSet) {
+    /// /                        SalesEntity salesData = new SalesEntity();
+    /// /                        salesData.setRegion(fieldSet.readString("Region"));
+    /// /                        salesData.setCountry(fieldSet.readString("Country"));
+    /// /                        salesData.setItemType(fieldSet.readString("Item Type"));
+    /// /                        salesData.setSalesChannel(fieldSet.readString("Sales Channel"));
+    /// /                        salesData.setOrderPriority(fieldSet.readString("Order Priority"));
+    /// /
+    /// /                        // Parse orderDate and shipDate from string to LocalDate
+    /// /                        salesData.setOrderDate(LocalDate.parse(fieldSet.readString("Order Date"), formatter));
+    /// /                        salesData.setShipDate(LocalDate.parse(fieldSet.readString("shipDate"), formatter));
+    /// /
+    /// /                        salesData.setUnitsSold((long) fieldSet.readInt("Units Sold"));
+    /// /                        salesData.setUnitPrice(fieldSet.readDouble("Unit Price"));
+    /// /                        salesData.setUnitCost(fieldSet.readDouble("Unit Cost"));
+    /// /                        salesData.setTotalRevenue(fieldSet.readDouble("Total Revenue"));
+    /// /                        salesData.setTotalCost(fieldSet.readDouble("totalCost"));
+    /// /                        salesData.setTotalProfit(fieldSet.readDouble("totalProfit"));
+    /// /
+    /// /                        return salesData;
+    /// /                    }
+    /// /                });
+    /// /            }});
+    /// /        }});
+    /// /
+    /// /        return reader;
 //    }
 
 
@@ -152,58 +151,52 @@ public class BatchConfig {
 //        throw new RuntimeException(e);
 //    }
 //}
+    @Bean
+    public FlatFileItemReader<Sale> reader() {
+        try {
+            // Define date formatter for parsing Order Date and Ship Date
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
-
-@Bean
-public FlatFileItemReader<Sale> reader() {
-    try {
-        // Define date formatter for parsing Order Date and Ship Date
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-
-        // Build the FlatFileItemReader
-        return new FlatFileItemReaderBuilder<Sale>()
-                .name("salesItemReader")
-                .resource(new ClassPathResource("1000000 Sales Records.csv"))
-                .delimited()
-                .names("Region", "Country", "Item Type", "Sales Channel", "Order Priority", "Order Date",
-                        "Order ID", "Ship Date", "Units Sold", "Unit Price", "Unit Cost",
-                        "Total Revenue", "Total Cost", "Total Profit")
-                .linesToSkip(1) // Skip header row
-                .strict(false)  // Allow malformed lines
-                .fieldSetMapper(fieldSet -> {
-                    Sale sale = new Sale();
-                    try {
-                        // Map CSV fields to SalesEntity properties matching the writer's SQL
-                        sale.setRegion(fieldSet.readString("Region"));
-                        sale.setCountry(fieldSet.readString("Country"));
-                        sale.setItemType(fieldSet.readString("Item Type"));
-                        sale.setSalesChannel(fieldSet.readString("Sales Channel"));
-                        sale.setOrderPriority(fieldSet.readString("Order Priority"));
-                        sale.setOrderDate(LocalDate.parse(fieldSet.readString("Order Date"), formatter));
-                        sale.setOrderId(fieldSet.readString("Order ID"));
-                        sale.setShipDate(LocalDate.parse(fieldSet.readString("Ship Date"), formatter));
-                        sale.setUnitsSold(fieldSet.readLong("Units Sold"));
-                        sale.setUnitPrice(fieldSet.readDouble("Unit Price"));
-                        sale.setUnitCost(fieldSet.readDouble("Unit Cost"));
-                        sale.setTotalRevenue(fieldSet.readDouble("Total Revenue"));
-                        sale.setTotalCost(fieldSet.readDouble("Total Cost"));
-                        sale.setTotalProfit(fieldSet.readDouble("Total Profit"));
-                    } catch (Exception e) {
-                        log.error("Error mapping CSV row to SalesEntity: {}", fieldSet, e);
-                        return null; // Skip invalid rows (processed by fault tolerance if configured)
-                    }
-                    return sale;
-                })
-                .build();
-    } catch (Exception e) {
-        log.error("Failed to initialize FlatFileItemReader", e);
-        throw new RuntimeException("Error initializing reader", e);
+            // Build the FlatFileItemReader
+            return new FlatFileItemReaderBuilder<Sale>()
+                    .name("salesItemReader")
+                    .resource(new ClassPathResource("1000000 Sales Records.csv"))
+                    .delimited()
+                    .names("Region", "Country", "Item Type", "Sales Channel", "Order Priority", "Order Date",
+                            "Order ID", "Ship Date", "Units Sold", "Unit Price", "Unit Cost",
+                            "Total Revenue", "Total Cost", "Total Profit")
+                    .linesToSkip(1) // Skip header row
+                    .strict(false)  // Allow malformed lines
+                    .fieldSetMapper(fieldSet -> {
+                        Sale sale = new Sale();
+                        try {
+                            // Map CSV fields to SalesEntity properties matching the writer's SQL
+                            sale.setRegion(fieldSet.readString("Region"));
+                            sale.setCountry(fieldSet.readString("Country"));
+                            sale.setItemType(fieldSet.readString("Item Type"));
+                            sale.setSalesChannel(fieldSet.readString("Sales Channel"));
+                            sale.setOrderPriority(fieldSet.readString("Order Priority"));
+                            sale.setOrderDate(LocalDate.parse(fieldSet.readString("Order Date"), formatter));
+                            sale.setOrderId(fieldSet.readString("Order ID"));
+                            sale.setShipDate(LocalDate.parse(fieldSet.readString("Ship Date"), formatter));
+                            sale.setUnitsSold(fieldSet.readLong("Units Sold"));
+                            sale.setUnitPrice(fieldSet.readDouble("Unit Price"));
+                            sale.setUnitCost(fieldSet.readDouble("Unit Cost"));
+                            sale.setTotalRevenue(fieldSet.readDouble("Total Revenue"));
+                            sale.setTotalCost(fieldSet.readDouble("Total Cost"));
+                            sale.setTotalProfit(fieldSet.readDouble("Total Profit"));
+                        } catch (Exception e) {
+                            log.error("Error mapping CSV row to SalesEntity: {}", fieldSet, e);
+                            return null; // Skip invalid rows (processed by fault tolerance if configured)
+                        }
+                        return sale;
+                    })
+                    .build();
+        } catch (Exception e) {
+            log.error("Failed to initialize FlatFileItemReader", e);
+            throw new RuntimeException("Error initializing reader", e);
+        }
     }
-}
-
-
-
-
 
 
     @Bean
@@ -233,8 +226,8 @@ public FlatFileItemReader<Sale> reader() {
 
 
     @Bean
-    public PlatformTransactionManager transactionManager(){
-       return new JpaTransactionManager(entityManagerFactory);
+    public PlatformTransactionManager transactionManager() {
+        return new JpaTransactionManager(entityManagerFactory);
     }
 
 
@@ -242,7 +235,7 @@ public FlatFileItemReader<Sale> reader() {
     public Step step1(JobRepository jobRepository,
                       FlatFileItemReader<Sale> reader, SalesItemProcessor processor,
                       JdbcBatchItemWriter<Sale> writer) {
-     log.info("reader::::::{}", reader);
+        log.info("reader::::::{}", reader);
         SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
         asyncTaskExecutor.setConcurrencyLimit(500); // Max 500 concurrent tasks
         asyncTaskExecutor.setThreadNamePrefix("job-thread-");
@@ -251,7 +244,7 @@ public FlatFileItemReader<Sale> reader() {
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
-             .taskExecutor(taskExecutor())
+                .taskExecutor(taskExecutor())
 
                 .build();
     }
@@ -290,12 +283,6 @@ public FlatFileItemReader<Sale> reader() {
                 .start(step1)
                 .build();
     }
-
-
-
-
-
-
 
 
 }
