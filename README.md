@@ -82,6 +82,13 @@ Used in AI-driven search applications (e.g., product search in e-commerce, recom
 
 **Key Concepts in Elasticsearch**
 
+Indices (Index) 
+
+An index is like a database in a relational database.
+It contains documents that share similar characteristics.
+Example: If you're storing user profiles, you might have an index named users.
+Each index is identified by a unique name and can be queried efficiently.
+
 
 
 
