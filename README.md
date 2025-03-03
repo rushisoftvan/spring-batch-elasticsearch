@@ -63,12 +63,13 @@ Useful for applications where data structure changes frequently.
 Elasticsearch is widely used in the ELK Stack (Elasticsearch + Logstash + Kibana) for log analysis.
 Helps process, store, and visualize logs, monitoring data, and real-time metrics.
 
-🔍 ** 7. Machine Learning & AI Integration **
+🔍 **7. Machine Learning & AI Integration**
 Supports natural language processing (NLP) and anomaly detection.
 Used in AI-driven search applications (e.g., product search in e-commerce, recommendation engines).
 
 
-** Use Cases for Elasticsearch **
+**Use Cases for Elasticsearch**
+
 ✔ E-commerce search: Fast product searches with filters and recommendations.
 ✔ Log analytics & monitoring: Collect and analyze logs (e.g., AWS CloudWatch, Kibana).
 ✔ Real-time analytics: Financial data, social media trends, and dashboards.
