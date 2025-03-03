@@ -84,10 +84,13 @@ Used in AI-driven search applications (e.g., product search in e-commerce, recom
 
 **Indices (Index)** 
 
-An index is like a database in a relational database.
-It contains documents that share similar characteristics.
-Example: If you're storing user profiles, you might have an index named users.
-Each index is identified by a unique name and can be queried efficiently.
+1) An index is like a database in a relational database.
+2) It contains documents that share similar characteristics.
+3) Example: If you're storing user profiles, you might have an index named users.
+4) Each index is identified by a unique name and can be queried efficiently.
+
+
+
 
 
 
