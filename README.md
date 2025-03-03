@@ -32,5 +32,9 @@ A job in Spring Batch refers to a larger unit of work that typically consists of
 A job consists of one or more steps.
 Each step typically represents a specific task (e.g., reading data from a file, processing it, and saving the result).
 
+# elasticsearch
+
+
+
 
 
