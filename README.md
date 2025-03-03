@@ -80,6 +80,13 @@ Used in AI-driven search applications (e.g., product search in e-commerce, recom
 
 ✔ Content management systems (CMS): Search within large document repositories.
 
+**Key Concepts in Elasticsearch**
+
+
+
+
+
+
 
 
 
