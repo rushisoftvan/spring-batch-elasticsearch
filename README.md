@@ -82,7 +82,7 @@ Used in AI-driven search applications (e.g., product search in e-commerce, recom
 
 **Key Concepts in Elasticsearch**
 
-Indices (Index) 
+**Indices (Index)** 
 
 An index is like a database in a relational database.
 It contains documents that share similar characteristics.
