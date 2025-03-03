@@ -34,6 +34,8 @@ Each step typically represents a specific task (e.g., reading data from a file, 
 
 # elasticsearch
 
+Elasticsearch is useful when you need fast, scalable, and efficient search and analytics capabilities that a traditional relational database (like MySQL or PostgreSQL) cannot provide efficiently.
+
 
 
 
