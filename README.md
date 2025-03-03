@@ -91,9 +91,16 @@ Used in AI-driven search applications (e.g., product search in e-commerce, recom
 
 **Documents 📄**
  
-A document is the basic unit of data storage in Elasticsearch.
-It is similar to a row in a relational database but stored in JSON format.
-Each document is stored inside an index and assigned a unique ID.
+1) A document is the basic unit of data storage in Elasticsearch.
+2)It is similar to a row in a relational database but stored in JSON format.
+3) Each document is stored inside an index and assigned a unique ID.
+
+Example : {
+             "id": 1,
+            "name": "John Doe",
+             "age": 30,
+            "email": "john@example.com"
+            }
 
 
 
