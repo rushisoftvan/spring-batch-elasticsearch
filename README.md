@@ -89,6 +89,13 @@ Used in AI-driven search applications (e.g., product search in e-commerce, recom
 3) Example: If you're storing user profiles, you might have an index named users.
 4) Each index is identified by a unique name and can be queried efficiently.
 
+**Documents 📄**
+ 
+A document is the basic unit of data storage in Elasticsearch.
+It is similar to a row in a relational database but stored in JSON format.
+Each document is stored inside an index and assigned a unique ID.
+
+
 
 
 
