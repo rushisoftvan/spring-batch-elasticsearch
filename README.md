@@ -38,7 +38,7 @@ Elasticsearch is useful when you need fast, scalable, and efficient search and a
 
 Key Reasons to Use Elasticsearch
 
-🔍 **1. Full-Text Search ** (Faster and More Relevant)
+ **1. Full-Text Search ** (Faster and More Relevant)
 Traditional databases are slow when performing text searches (e.g., searching for "Spring Boot tutorials" in millions of documents).
 Elasticsearch uses inverted indexing, which makes text-based searches 100x faster than SQL queries with LIKE or FULLTEXT INDEX.
 Supports fuzzy search, autocomplete, and synonyms, making searches smarter.
