@@ -108,6 +108,21 @@ A field is like a column in a relational database.
 
 Each document consists of multiple fields with corresponding values.
 
+**Index API in Elasticsearch**
+The Index API in Elasticsearch is used to create or update a document in a specified index.
+
+. ***What is a Shard?***
+A shard is a small subset of an index’s data. When you create an index in Elasticsearch, it is automatically divided into shards, and each shard is stored on a different node (if available).
+
+🔹 ***Why use shards?***
+
+Improves search and indexing performance by distributing data across multiple nodes.
+Enables horizontal scaling (more nodes = better performance).
+Increases fault tolerance by replicating data across nodes.
+
+
+
+
             
 
 
