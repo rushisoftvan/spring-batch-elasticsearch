@@ -14,7 +14,7 @@ public class ProductEntity {
 
 
     @Id
-    private Long id;
+    private String id;
 
     @Field(type = FieldType.Text)
     private String name;
