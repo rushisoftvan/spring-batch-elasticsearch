@@ -1,8 +1,9 @@
 package com.learn.spring_batch;
 
-import com.learn.spring_batch.entities.Sale;
-import com.learn.spring_batch.processer.SalesItemProcessor;
-import jakarta.persistence.EntityManagerFactory;
+import com.learn.spring_batch.elasticserach.entities.ProductEntity;
+import com.learn.spring_batch.elasticserach.repositories.ProductRepo;
+import com.learn.spring_batch.processer.ProductItemProcessor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -10,30 +11,41 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
-import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import javax.sql.DataSource;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Configuration
 public class BatchConfig {
 
+//    @Autowired
+//    private EntityManagerFactory entityManagerFactory;
+
     @Autowired
-    private EntityManagerFactory entityManagerFactory;
+    private ProductItemProcessor productItemProcessor;
+
+//    @Autowired
+//    private ProductWriter productWriter;
+
+    @Autowired
+    private  DataSource dataSource;
+
+    @Autowired
+    ProductRepo productRepo;
 
 
 //    @Bean
@@ -151,58 +163,65 @@ public class BatchConfig {
 //        throw new RuntimeException(e);
 //    }
 //}
-    @Bean
-    public FlatFileItemReader<Sale> reader() {
-        try {
-            // Define date formatter for parsing Order Date and Ship Date
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+//    @Bean
+//    public FlatFileItemReader<Sale> reader() {
+//        try {
+//            // Define date formatter for parsing Order Date and Ship Date
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+//
+//            // Build the FlatFileItemReader
+//            return new FlatFileItemReaderBuilder<Sale>()
+//                    .name("salesItemReader")
+//                    .resource(new ClassPathResource("1000000 Sales Records.csv"))
+//                    .delimited()
+////                    .names("Region", "Country", "Item Type", "Sales Channel", "Order Priority", "Order Date",
+////                            "Order ID", "Ship Date", "Units Sold", "Unit Price", "Unit Cost",
+////                            "Total Revenue", "Total Cost", "Total Profit")
+//                    .names("name","description","price")
+//                    .linesToSkip(1) // Skip header row
+//                    .strict(false)  // Allow malformed lines
+//                    .fieldSetMapper(fieldSet -> {
+//                        Sale sale = new Sale();
+//                        try {
+//                            // Map CSV fields to SalesEntity properties matching the writer's SQL
+//                            sale.setRegion(fieldSet.readString("Region"));
+//                            sale.setCountry(fieldSet.readString("Country"));
+//                            sale.setItemType(fieldSet.readString("Item Type"));
+//                            sale.setSalesChannel(fieldSet.readString("Sales Channel"));
+//                            sale.setOrderPriority(fieldSet.readString("Order Priority"));
+//                            sale.setOrderDate(LocalDate.parse(fieldSet.readString("Order Date"), formatter));
+//                            sale.setOrderId(fieldSet.readString("Order ID"));
+//                            sale.setShipDate(LocalDate.parse(fieldSet.readString("Ship Date"), formatter));
+//                            sale.setUnitsSold(fieldSet.readLong("Units Sold"));
+//                            sale.setUnitPrice(fieldSet.readDouble("Unit Price"));
+//                            sale.setUnitCost(fieldSet.readDouble("Unit Cost"));
+//                            sale.setTotalRevenue(fieldSet.readDouble("Total Revenue"));
+//                            sale.setTotalCost(fieldSet.readDouble("Total Cost"));
+//                            sale.setTotalProfit(fieldSet.readDouble("Total Profit"));
+//                        } catch (Exception e) {
+//                            log.error("Error mapping CSV row to SalesEntity: {}", fieldSet, e);
+//                            return null; // Skip invalid rows (processed by fault tolerance if configured)
+//                        }
+//                        return sale;
+//                    })
+//                    .build();
+//        } catch (Exception e) {
+//            log.error("Failed to initialize FlatFileItemReader", e);
+//            throw new RuntimeException("Error initializing reader", e);
+//        }
+//    }
 
-            // Build the FlatFileItemReader
-            return new FlatFileItemReaderBuilder<Sale>()
-                    .name("salesItemReader")
-                    .resource(new ClassPathResource("1000000 Sales Records.csv"))
-                    .delimited()
-                    .names("Region", "Country", "Item Type", "Sales Channel", "Order Priority", "Order Date",
-                            "Order ID", "Ship Date", "Units Sold", "Unit Price", "Unit Cost",
-                            "Total Revenue", "Total Cost", "Total Profit")
-                    .linesToSkip(1) // Skip header row
-                    .strict(false)  // Allow malformed lines
-                    .fieldSetMapper(fieldSet -> {
-                        Sale sale = new Sale();
-                        try {
-                            // Map CSV fields to SalesEntity properties matching the writer's SQL
-                            sale.setRegion(fieldSet.readString("Region"));
-                            sale.setCountry(fieldSet.readString("Country"));
-                            sale.setItemType(fieldSet.readString("Item Type"));
-                            sale.setSalesChannel(fieldSet.readString("Sales Channel"));
-                            sale.setOrderPriority(fieldSet.readString("Order Priority"));
-                            sale.setOrderDate(LocalDate.parse(fieldSet.readString("Order Date"), formatter));
-                            sale.setOrderId(fieldSet.readString("Order ID"));
-                            sale.setShipDate(LocalDate.parse(fieldSet.readString("Ship Date"), formatter));
-                            sale.setUnitsSold(fieldSet.readLong("Units Sold"));
-                            sale.setUnitPrice(fieldSet.readDouble("Unit Price"));
-                            sale.setUnitCost(fieldSet.readDouble("Unit Cost"));
-                            sale.setTotalRevenue(fieldSet.readDouble("Total Revenue"));
-                            sale.setTotalCost(fieldSet.readDouble("Total Cost"));
-                            sale.setTotalProfit(fieldSet.readDouble("Total Profit"));
-                        } catch (Exception e) {
-                            log.error("Error mapping CSV row to SalesEntity: {}", fieldSet, e);
-                            return null; // Skip invalid rows (processed by fault tolerance if configured)
-                        }
-                        return sale;
-                    })
-                    .build();
-        } catch (Exception e) {
-            log.error("Failed to initialize FlatFileItemReader", e);
-            throw new RuntimeException("Error initializing reader", e);
-        }
-    }
+
+//    @Bean
+//    public SalesItemProcessor processor() {
+//        return new SalesItemProcessor();
+//    }
 
 
-    @Bean
-    public SalesItemProcessor processor() {
-        return new SalesItemProcessor();
-    }
+//   @Bean
+//    public ProductItemProcessor productProcesser(){
+//       return new ProductItemProcessor();
+//    }
 
 //    @Bean
 //    public JpaItemWriter<SalesEntity> writer(EntityManagerFactory entityManagerFactory) {
@@ -213,41 +232,41 @@ public class BatchConfig {
 //    }
 
 
-    @Bean
-    public JdbcBatchItemWriter<Sale> writer(DataSource dataSource) {
-        JdbcBatchItemWriter<Sale> writer = new JdbcBatchItemWriter<>();
-        writer.setDataSource(dataSource);
-        writer.setSql("INSERT INTO sales (region, country, item_type, sales_channel, order_priority, order_date, " +
-                "order_id, shipe_date, unit_solid, unit_price, unit_cost, total_revenue, total_cost, total_profit) " +
-                "VALUES (:region, :country, :itemType, :salesChannel, :orderPriority, :orderDate, :orderId, :shipDate, :unitsSold, :unitPrice, :unitCost, :totalRevenue, :totalCost, :totalProfit)");
-        writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
-        return writer;
-    }
+//    @Bean
+//    public JdbcBatchItemWriter<Sale> writer(DataSource dataSource) {
+//        JdbcBatchItemWriter<Sale> writer = new JdbcBatchItemWriter<>();
+//        writer.setDataSource(dataSource);
+//        writer.setSql("INSERT INTO sales (region, country, item_type, sales_channel, order_priority, order_date, " +
+//                "order_id, shipe_date, unit_solid, unit_price, unit_cost, total_revenue, total_cost, total_profit) " +
+//                "VALUES (:region, :country, :itemType, :salesChannel, :orderPriority, :orderDate, :orderId, :shipDate, :unitsSold, :unitPrice, :unitCost, :totalRevenue, :totalCost, :totalProfit)");
+//        writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
+//        return writer;
+//    }
 
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new JpaTransactionManager(entityManagerFactory);
-    }
+//    @Bean
+//    public PlatformTransactionManager transactionManager() {
+//        return new JpaTransactionManager(entityManagerFactory);
+//    }
 
 
-    @Bean
-    public Step step1(JobRepository jobRepository,
-                      FlatFileItemReader<Sale> reader, SalesItemProcessor processor,
-                      JdbcBatchItemWriter<Sale> writer) {
-        log.info("reader::::::{}", reader);
-        SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
-        asyncTaskExecutor.setConcurrencyLimit(500); // Max 500 concurrent tasks
-        asyncTaskExecutor.setThreadNamePrefix("job-thread-");
-        return new StepBuilder("step1", jobRepository)
-                .<Sale, Sale>chunk(5000, transactionManager())
-                .reader(reader)
-                .processor(processor)
-                .writer(writer)
-                .taskExecutor(taskExecutor())
-
-                .build();
-    }
+//    @Bean
+//    public Step step1(JobRepository jobRepository,
+//                      FlatFileItemReader<Sale> reader, SalesItemProcessor processor,
+//                      JdbcBatchItemWriter<Sale> writer) {
+//        log.info("reader::::::{}", reader);
+//        SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
+//        asyncTaskExecutor.setConcurrencyLimit(500); // Max 500 concurrent tasks
+//        asyncTaskExecutor.setThreadNamePrefix("job-thread-");
+//        return new StepBuilder("step1", jobRepository)
+//                .<Sale, Sale>chunk(5000, transactionManager())
+//                .reader(reader)
+//                .processor(processor)
+//                .writer(writer)
+//                .taskExecutor(taskExecutor())
+//
+//                .build();
+//    }
 
 
 //    @Bean
@@ -282,6 +301,81 @@ public class BatchConfig {
                 .incrementer(new RunIdIncrementer())
                 .start(step1)
                 .build();
+    }
+
+
+    @Bean
+    public ItemWriter<ProductEntity> writer() {
+
+        return items -> productRepo.saveAll(items); // Bulk save to Elasticsearch
+    }
+
+
+
+       //elastic serach
+        @Bean
+        public FlatFileItemReader<ProductEntity> productItemReader() {
+            return new FlatFileItemReaderBuilder<ProductEntity>()
+                    .name("saleItemReader")
+                    .resource(new ClassPathResource("product.csv"))
+                    .linesToSkip(1) // Skip header row
+                    .delimited()
+                    .names("name","description","price")
+                    .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
+                        setTargetType(ProductEntity.class); // Auto maps CSV columns to Sale fields
+                    }})
+                    .build();
+        }
+
+
+        // elastic search
+
+      //  @Bean
+//    public Step step1(JobRepository jobRepository,
+//                      FlatFileItemReader<ProductEntity> reader , ProductItemProcessor processor,
+//                      ProductItemProcessor writer) {
+//        log.info("reader::::::{}", reader);
+//        SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
+//        asyncTaskExecutor.setConcurrencyLimit(500); // Max 500 concurrent tasks
+//        asyncTaskExecutor.setThreadNamePrefix("job-thread-");
+//        return new StepBuilder("step1", jobRepository)
+//                .<Sale, Sale>chunk(5000, transactionManager())
+//                .reader(productItemReader())
+//                .processor(processor)
+//                .writer(writer)
+//                .taskExecutor(taskExecutor())
+//
+//                .build();
+//    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new NoOpTransactionManager();
+    }
+
+    @Bean
+    public Step step1(JobRepository jobRepository, FlatFileItemReader<ProductEntity> reader ,
+                     PlatformTransactionManager platformTransactionManager){
+
+
+    return new StepBuilder("step2", jobRepository)
+            .<ProductEntity, ProductEntity> chunk(500,platformTransactionManager)
+            .reader(reader)
+    //  .processor(processor)
+            .writer(writer())
+            .build();
+
+    }
+
+    class NoOpTransactionManager extends AbstractPlatformTransactionManager {
+        @Override
+        protected Object doGetTransaction() { return new Object(); }
+        @Override
+        protected void doBegin(Object transaction, TransactionDefinition definition) {}
+        @Override
+        protected void doCommit(DefaultTransactionStatus status) {}
+        @Override
+        protected void doRollback(DefaultTransactionStatus status) {}
     }
 
 
